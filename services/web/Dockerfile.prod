@@ -1,0 +1,44 @@
+# Build stage
+FROM oven/bun:1.1 AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json bun.lockb* ./
+
+# Install dependencies optimized for production
+ENV NODE_ENV=development
+RUN bun ci --ignore-scripts && \
+    bun cache clean --force
+
+# Copy source code
+COPY . .
+
+# Build with production optimizations
+ENV NODE_ENV=production
+RUN bun run build
+
+# Remove unnecessary files to reduce image size
+RUN rm -rf node_modules src public
+
+
+# Production stage with Nginx
+FROM nginx:alpine
+
+# Install brotli for better compression
+RUN apk add --no-cache brotli
+
+# Copy built assets from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Remove default nginx config
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,16 @@
+{
+  "name": "pulseguard",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

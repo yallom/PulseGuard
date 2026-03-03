@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Caregiver {
+  id      String        @id @default(uuid())
+  name    String
+  contact String
+  type    CaregiverType
+
+  users   User[]
+}
+
+model User {
+  id               String   @id @default(uuid())
+  idCaregiver      String
+  contactCaregiver String
+  name             String
+  birth_date       DateTime
+  gender           Gender
+  height           Int
+  weight           Int
+  lang             String
+  avatar           String
+
+  caregiver Caregiver @relation(fields: [idCaregiver], references: [id])
+  records   Record[]
+  bracelets Bracelet[]
+}
+
+model Record {
+  id        String   @id @default(uuid())
+  idUser    String
+  timestamp DateTime
+  heart_rate Int
+  oxigen     Int
+  accel      Int
+
+  user User @relation(fields: [idUser], references: [id])
+}
+
+model Bracelet {
+  id               String   @id
+  idUser           String
+  fabrication_date DateTime
+
+  user User @relation(fields: [idUser], references: [id])
+}
+
+enum CaregiverType {
+  guardian
+  professional
+  facility
+  hospital
+}
+
+enum Gender {
+  male
+  female
+  other
+}
