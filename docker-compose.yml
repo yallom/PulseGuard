@@ -1,6 +1,8 @@
 services:
   backend:
-    build: ./services/backend
+    build: 
+      context: .
+      dockerfile: ./services/backend/Dockerfile
     container_name: pulseguard_backend
     ports:
       - "3000:3000"
@@ -9,19 +11,20 @@ services:
     depends_on:
       - db
     volumes:
-      - ./services/backend:/app
+      - .:/app
       - /app/node_modules
     networks:
       - net
 
   web:
     build: 
-      context: ./services/web
+      context: .
+      dockerfile: ./services/web/Dockerfile
     container_name: pulseguard_web
     ports:
       - "5173:5173"
     volumes:
-      - ./services/web:/app
+      - .:/app
       - /app/node_modules
     depends_on:
       - backend

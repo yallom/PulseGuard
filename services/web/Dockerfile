@@ -1,17 +1,21 @@
 FROM oven/bun:1.1
 
+#apontar para a root do projeto
 WORKDIR /app
 
-# Copy package files
-COPY package*.json bun.lockb* ./
+#copiar ficheiros de configuração da root
+COPY package.json bun.lock ./
 
-# Clean install
-RUN bun install
+#copiar apenas os workspaces necessários
+COPY services/web ./services/web
+COPY packages/shared ./packages/shared
 
-# Copy source code
-COPY . .
+#filtrar os packages a instalar
+RUN bun install --filter=./services/web...
 
-# Expose Vite default port
+WORKDIR /app/services/web
+
+# Expose web port
 EXPOSE 5173
 
 # Start development server

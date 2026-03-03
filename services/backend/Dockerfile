@@ -1,13 +1,22 @@
 FROM oven/bun:1.3.5-alpine
 
+#apontar para a root do projeto
 WORKDIR /app
 
-COPY package.json  bun.lock ./
+#copiar ficheiros de configuração da root
+COPY package.json bun.lock ./
 
-RUN bun install
+#copiar apenas os workspaces necessários
+COPY services/backend ./services/backend
+COPY packages/shared ./packages/shared
 
-COPY . .
+#filtrar os packages a instalar
+RUN bun install --filter=./services/backend...
 
+# Switch into backend workspace
+WORKDIR /app/services/backend
+
+# Generate prisma client
 RUN bunx prisma generate
 
 EXPOSE 3000
