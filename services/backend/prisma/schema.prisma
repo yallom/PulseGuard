@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -57,7 +58,7 @@ model Record {
 }
 
 model Bracelet {
-  id                String   @id
+  id                String   @id @default(uuid())
   idUser            String
   fabrication_date  DateTime
   
